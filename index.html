@@ -15,23 +15,49 @@
             border-radius: 5px;
             white-space: pre-wrap; /* To preserve line breaks */
         }
+        #message {
+            font-size: smaller;
+        }
+        #explanation {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <h1>Ten Digit Number</h1>
-    <button onclick="calculateAndDisplay()">Click me to brute force all possible numbers!</button>
+    <button onclick="calculateAndDisplay()">Click me to brute force all 10 digit numbers!</button>
+    <div id="message">
+        <p>*This calculation takes nearly 15 seconds before the results are rendered!
+    </div>
+    <div id="explanation">
+        <p>The following is a list of all 10 digit numbers where each n digits form a number divisible by n (for n∈{1,2,...,10})
+    </div>
+    <div id="results">
+        <p>
+    </div>
     <div id="output"></div>
 
 
 
     <script>
+        // Generalized method to print with animation
+        function printWithAnimation(text, delay = 100, callback) {
+            requestAnimationFrame(function() {
+                let outputDiv = document.getElementById('output');
+                let p = document.createElement('p');
+                p.textContent = text;
+                outputDiv.appendChild(p);
+
+                if (callback) {
+                    setTimeout(callback, delay);
+                }
+            });
+        }
+
         function calculateAndDisplay() {
-            // Get the output container
-            let outputDiv = document.getElementById('output');
-            
-            // Clear any previous content
-            outputDiv.innerHTML = '';
-            
+            // Clear previous content
+            document.getElementById('output').innerHTML = '';
+        
             // result variable to number
             var result = 0;
 
@@ -70,26 +96,11 @@
                                                         if (hasUniqueDigits(i)) {
                                                             console.log(i);
                                                             result = i;
+                                                            printWithAnimation(i + " has ten unique digits where each is divisible by its column!", 100);
 
-                                                            requestAnimationFrame(function() {
-                                                                // Create a new paragraph element for each number
-                                                                var pEle = document.createElement('p');
-                                                                // Set the text content of the paragraph
-                                                                pEle.textContent = i + " has ten unique digits where each is divisible by its column!";
-                                                                // Append the paragraph to the output div
-                                                                outputDiv.appendChild(pEle);
-                                                            });
                                                         } else {
                                                             console.log(i + " does not have ten unique digits; fail.");
-                                                            
-                                                            requestAnimationFrame(function() {
-                                                                // Create a new paragraph element for each number
-                                                                var pEle = document.createElement('p');
-                                                                // Set the text content of the paragraph
-                                                                pEle.textContent = i + " does not have ten unique digits; fail.";
-                                                                // Append the paragraph to the output div
-                                                                outputDiv.appendChild(pEle);
-                                                            });
+                                                            printWithAnimation(i + " does not have ten unique digits; fail.", 100);
                                                         }
                                                     } // firstNine
                                                 }
@@ -118,9 +129,8 @@
             }
 
             console.log("Complete!");
-            console.log(result + " has ten unique digits where each is divisible by it's column!");
-            // prints it to the page
-            //document.getElementById('numberDisplay').innerText = result + " has unique digits where each is divisible by it's column.";
+            console.log(result + " has ten unique digits where each is divisible by its column!");
+            printWithAnimation(result + " has ten unique digits where each is divisible by its column!", 100);
 
         } // calculateAndDisplay()
     </script>
