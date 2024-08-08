@@ -21,118 +21,138 @@
         #explanation {
             font-weight: bold;
         }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            height: 600px; /* Adjust as needed */
+            overflow-y: auto; /* Enable vertical scrolling */
+            white-space: normal; /* Allow text to wrap */
+        }
     </style>
 </head>
 <body>
-    <h1>Ten Digit Number</h1>
-    <button onclick="calculateAndDisplay()">Click me to brute force all 10 digit numbers!</button>
-    <div id="message">
-        <p>*This calculation takes nearly 15 seconds before the results are rendered!
-    </div>
+    <h1>10-digit Number Puzzle</h1>
     <div id="explanation">
-        <p>The following is a list of all 10 digit numbers where each n digits form a number divisible by n (for n∈{1,2,...,10})
+        <p>Find a 10 digit number that uses each of the digits 0 to 9 exactly once and where the number formed by the first n digits of the number is divisible by n.</p>
+        <p> </p>
+        <button onclick="calculateAndDisplay()">Click this to brute force all 10 digit numbers!</button>
     </div>
-    <div id="results">
-        <p>
+    <div id="message">
+        <p>*This calculation takes a while and results will be rendered below.</p>
+    </div>    
+    <div id="outputExplanation">
+        <p>The following is a list of all 10 digit numbers where each n digit forms a number divisible by n (for n∈{1,2,...,10}), but not necessarily with unique digits.</p>
     </div>
     <div id="output"></div>
-
-
+    <div id="results"></div>
 
     <script>
-        // Generalized method to print with animation
-        function printWithAnimation(text, delay = 100, callback) {
-            requestAnimationFrame(function() {
-                let outputDiv = document.getElementById('output');
-                let p = document.createElement('p');
-                p.textContent = text;
-                outputDiv.appendChild(p);
-
-                if (callback) {
-                    setTimeout(callback, delay);
-                }
-            });
+        // test to determine if each digit is unique (only used once)
+        function hasUniqueDigits(number) {
+            var numberString = number.toString();
+            var digitsSet = new Set(numberString);
+            return digitsSet.size === numberString.length;
         }
 
-        function calculateAndDisplay() {
-            // Clear previous content
+        // print to the page function
+        function printWithAnimation(text, delay = 10, newLine = false, callback) {
+            var outputDiv = document.getElementById('output');
+            if (newLine) {
+                // Create a new paragraph
+                var p = document.createElement('p');
+                p.textContent = text;
+                outputDiv.appendChild(p);
+            } else {
+                // Append to the last child element
+                if (outputDiv.lastChild && outputDiv.lastChild.nodeName === "P") {
+                    outputDiv.lastChild.textContent += text + " ";
+                } else {
+                    // If no paragraph exists, create one
+                    var p = document.createElement('p');
+                    p.textContent = text;
+                    outputDiv.appendChild(p);
+                }
+            }
+            // Ensure that the scroll happens after the element has been appended and rendered
+            setTimeout(() => {
+                outputDiv.scrollTop = outputDiv.scrollHeight;
+            }, 0);
+            if (callback) {
+                setTimeout(callback, delay);
+            }
+        }
+
+        // main fucntion to calculate and display results
+        async function calculateAndDisplay() {
+            // clear previous content
             document.getElementById('output').innerHTML = '';
-        
-            // result variable to number
+            
+            //if (alert("\n\nRefresh the page to stop.\n\nClick ok to continue.")) {}
+            
+            // Math.floor to remove decimals. divide by 1n to isolate leading digits
+            // i % 1n to isolate ending digits
+            
+            // we skip the first column because everything is divisible by 1
+            var firstTwo = Math.floor(i / 100000000);
+            
+            // we know the firth column has to be five
+            var firstFive = Math.floor(i / 100000);
+
+            // we know the tenth/last column has to be 0, so we can skip this and its check by incrementing the loop by 10 each iteration
+            //var firstTen = Math.floor(i / 1);
+            // other columns have to be, something? which we can implement later...
+
+            // initialize result variable as a number
             var result = 0;
 
-            console.log("Ten digit number with unique digits where each digit is divisible by their place:");
+            for (var i = 1000500000; i <= 9999999999; i += 10) {
+                var firstFive = Math.floor(i / 100000); // retrieve first five digits to ensure it always ends with a 5. ie; nnnn5
+                var firstTwo = Math.floor(i / 100000000); // retrieve first two digits to being divisibility testing 
 
-            for (var i = 1000000000; i <= 9999999999; i += 10) {
-                    //if (alert("\nCount: " + i + "\n\nRefresh the page to stop.\n\nClick ok to continue.")) {}
-                    // Math.floor to remove decimals. divide by 1n to isolate leading digits
-                    // i % 1n to isolate ending digits
-                    
-                    // we skip the first column because everything is divisible by 1
-                    var firstTwo = Math.floor(i / 100000000);
-                    
-                    // we know the firth column has to be five
-                    var firstFive = Math.floor(i / 100000);
+                if (firstFive % 10 == 5) {
+                    if (firstTwo % 2 == 0) {
+                        var firstThree = Math.floor(i / 10000000);
+                        if (firstThree % 3 == 0) {
+                            var firstFour = Math.floor(i / 1000000);
+                            if (firstFour % 4 == 0) {
+                                if (firstFive % 5 == 0) {
+                                    var firstSix = Math.floor(i / 10000);
+                                    if (firstSix % 6 == 0) {
+                                        var firstSeven = Math.floor(i / 1000);
+                                        if (firstSeven % 7 == 0) {
+                                            var firstEight = Math.floor(i / 100);
+                                            if (firstEight % 8 == 0) {
+                                                var firstNine = Math.floor(i / 10);
+                                                if (firstNine % 9 == 0) {
+                                                    if (hasUniqueDigits(i)) {
+                                                        console.log(i + " is divisible and digits are unique!");
+                                                        result = i;
+                                                        printWithAnimation(i + " is divisible and each digit is unique!\n\n", 10, true);
+                                                        printWithAnimation("", 10, true);
 
-                    // we know the tenth/last column has to be 0, so we can skip this and the check by incrementing the for loop by 10 each time
-                    //var firstTen = Math.floor(i / 1);
-                    // other columns have to be something, which we will implement later
+                                                    } else {
+                                                        console.log(i + " is divisible but fails uniqueness test.");
+                                                        printWithAnimation(i + ", " , 10, false);
 
-                    if (firstFive % 10 == 5/* && firstTen % 10 == 0*/) {
-                        if (firstTwo % 2 == 0) {
-                            var firstThree = Math.floor(i / 10000000);
-                            if (firstThree % 3 == 0) {
-                                var firstFour = Math.floor(i / 1000000);
-                                if (firstFour % 4 == 0) {
-                                    if (firstFive % 5 == 0) {
-                                        var firstSix = Math.floor(i / 10000);
-                                        if(firstSix % 6 == 0) {
-                                            var firstSeven = Math.floor(i / 1000);
-                                            if (firstSeven % 7 == 0) {
-                                                var firstEight = Math.floor(i / 100);
-                                                if (firstEight % 8 == 0) {
-                                                    var firstNine = Math.floor(i / 10);
-                                                    if (firstNine % 9 == 0) {
-                                                        if (hasUniqueDigits(i)) {
-                                                            console.log(i);
-                                                            result = i;
-                                                            printWithAnimation(i + " has ten unique digits where each is divisible by its column!", 100);
-
-                                                        } else {
-                                                            console.log(i + " does not have ten unique digits; fail.");
-                                                            printWithAnimation(i + " does not have ten unique digits; fail.", 100);
-                                                        }
-                                                    } // firstNine
+                                                    }
+                                                    // small delay before the next iteration
+                                                    await new Promise(resolve => setTimeout(resolve, 10));
                                                 }
                                             }
                                         }
                                     }
                                 }
                             }
-                        } // firstTwo
-                    } // firstFive
-                } // for loop
-            
-            // good example of a breakpoint message
-            //if (alert("First five numbers: " + firstFive + "\nCount: " + i + "\n\nRefresh the page to stop.\n\nClick ok to continue.")) {}
-
-
-            function hasUniqueDigits(number) {
-                // Convert the number to a string
-                let numberString = number.toString();
-                
-                // Create a Set from the string's characters
-                let digitsSet = new Set(numberString);
-                
-                // Compare the size of the Set with the length of the string
-                return digitsSet.size === numberString.length;
+                        }
+                    }
+                }
             }
 
-            console.log("Complete!");
-            console.log(result + " has ten unique digits where each is divisible by its column!");
-            printWithAnimation(result + " has ten unique digits where each is divisible by its column!", 100);
-
-        } // calculateAndDisplay()
+            console.log("Solution: " + result + " has ten unique digits where each is divisible by its column!");
+            printWithAnimation("\nSolution: " + result + " has ten unique digits where each is divisible by its column!\n", 10, true);
+        }
     </script>
 
 </body>
